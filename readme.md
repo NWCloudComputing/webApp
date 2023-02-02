@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Assignment 1:
 
 I developed a web application using nodejs and the database used is postgresSQL.
@@ -13,3 +14,9 @@ The RESTful API Endpoints implemented are
 3. PUT - to update the values like first_name, last_name and password PUT is used. username cannot be updated. Basic authorization should happen successfully when a user wants to update the values. API address will be http://localhost:3000/v1/user/{id}. The values that need to be updated should be given in the json format. The response for this call is the 'Data is Updated' message.
 
 All the values in rows in table format can be viewed using pgAdmin
+=======
+
+Start of Assignment 1
+Created origin-vennela
+origin-upstream
+>>>>>>> 4645255365fc4528ee01719beb9b72516d853970
