@@ -72,7 +72,7 @@ const createUser = (request, response) => {
                 }).then((result) => {
                    // console.log(result.dataValues.password);
                     delete result.dataValues.password;
-                    response.send(result);
+                    response.status(201).send(result);
                 }).catch((error) => {
                     console.log(error);
                 });
@@ -96,7 +96,7 @@ const getUser = (request, response) =>{
     const [username, password] = basicAuthenticationHandler(request);
 
         if (!username || !password) {
-            return response.status(403).json("Please provide Username and Password");
+            return response.status(401).json("Please provide Username and Password");
         }
 
         users.findByPk(request.params.userId).then((result) => {
@@ -122,11 +122,11 @@ const getUser = (request, response) =>{
                 
                 })
             }else {
-                response.status(400).send('ID and username does not match');
+                response.status(403).send('ID and username does not match');
             }
                  
             }).catch((error) => {
-                return response.status(401).json("Error Fetching Data");
+                return response.status(400).json("Error Fetching Data");
                 
             }); 
 
@@ -137,7 +137,7 @@ const editUser = (request, response) => {
     const [username, password] = basicAuthenticationHandler(request);
 
     if (!username || !password) {
-        return response.status(403).json("Please provide Username and Password");
+        return response.status(401).json("Please provide Username and Password");
     }
 
     intermediateMethodToUpdate(request, response, username);
@@ -156,7 +156,7 @@ const editUser = (request, response) => {
 
                 users.update(request.body, {where:{id: request.params.userId}}).then((updatedData) => {
                    // response.status(200).send(updatedData);
-                    response.status(200).send('Data is Updated')
+                    response.status(204).send('Data is Updated')
                     console.log('updated');
                 }).catch((error)=> {
                     
@@ -185,11 +185,11 @@ const editUser = (request, response) => {
             })
 
         }else {
-            response.status(400).send('ID and username does not match')
+            response.status(403).send('ID and username does not match')
         }
              
         }).catch((error) => {
-            return response.status(401).json("Error Fetching Data");
+            return response.status(400).json("Error Fetching Data");
             
         }); 
 
@@ -221,7 +221,7 @@ const intermediateMethodToUpdate = (request, response, username) => {
     const account_updated = new Date().toISOString();
     const { first_name, last_name, password } = request.body;
     if ((password && password.length < 8) || (first_name && !first_name.length) || (last_name && !last_name.length)) {
-        return response.status(400).json("Incorrect Credentials");
+        return response.status(401).json("Incorrect Credentials");
     }
     if (password) {
         hashingOfPassword(password)
