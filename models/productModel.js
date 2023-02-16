@@ -3,12 +3,13 @@ const {Sequelize, Model, DataTypes} = require('sequelize');
 
 const products = sequelize.define('Product',{
     id: {        
+        primaryKey:true,
         autoIncrement:true,
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER
     },
     name: DataTypes.STRING,
     description: DataTypes.STRING,
-    sku:{primaryKey:true,type:DataTypes.STRING} ,
+    sku:{type:DataTypes.STRING} ,
     manufacturer: DataTypes.STRING,
     quantity:{type:DataTypes.INTEGER,
         validate:{min:0,max:100}},
