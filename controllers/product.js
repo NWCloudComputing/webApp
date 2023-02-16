@@ -28,9 +28,7 @@ const createProduct = (request, response) => {
         return response.status(401).json("Please provide Username and Password");
     }
 
-    else if (quantity<0 && quantity>100){
-        response.status(400).send('Quantity Should be in between 0 and 100');
-    }
+   
 
     let returnValue = null;
     returnValue = intermediateMethodToUpdate(request, response, username);
@@ -48,11 +46,19 @@ const createProduct = (request, response) => {
                 if (valueToCompare) {
 
                     
-
-                    if (!name || !description || !sku || !manufacturer || !quantity) {
+                    console.log(!quantity);
+                    if ((!name || !description || !sku || !manufacturer || !quantity) && quantity!= 0) {
                         return response.status(400).json("Incomplete Data");
                     }
 
+                    else if (quantity<0 && quantity>100 && quantity.isInteger()){
+                        return response.status(400).send('Quantity Should be in between 0 and 100');
+                    }
+
+                    else if (typeof quantity === 'string' ){
+                        return response.status(400).json("Bad Request, quantity must be an integer");
+
+                    }
                     
 
 
@@ -77,7 +83,7 @@ const createProduct = (request, response) => {
 
                                return response.status(201).send(res.generate(false, 'Product added successfully', 201, result));
                             }).catch((error) => {
-                                response.status(400).send('Quantity should be between 0 and 100');
+                                response.status(400).send('Error inserting data to products table.Quantity should be in between 0 and 100.');
                                 console.log(error);
                             });
 
@@ -92,7 +98,7 @@ const createProduct = (request, response) => {
 
 
         } else {
-            response.status(404).send('User not found');
+            response.status(401).send('User not found');
         }
 
 
@@ -113,7 +119,7 @@ const getProduct = (request, response) => {
         if(result){
             return response.status(200).send(res.generate(false,'Product fetched', 200, result));
         }else {
-            return response.status(400).send(res.generate(true,'Product with sku ' + request.params.productId +' does not exist', 400, result));
+            return response.status(400).send(res.generate(true,'Product with productId ' + request.params.productId +' does not exist', 400, result));
         }
         
     }).catch((error) => {
@@ -134,7 +140,7 @@ const updateProduct = (request, response) => {
 
     const { name, description, sku, manufacturer, quantity } = request.body;
 
-    if (!name || !description || !sku || !manufacturer || !quantity) {
+    if ((!name || !description || !sku || !manufacturer || !quantity) && quantity!= 0) {
         return response.status(400).json("Incomplete Data");
     }
 
@@ -150,7 +156,7 @@ const updateProduct = (request, response) => {
 
         if (user) {
 
-            products.findOne({where:{sku:request.params.productId}}).then((record) => {
+            products.findOne({where:{id:request.params.productId}}).then((record) => {
                 if(record) {
                     if(record.owner_user_id == user.id){
 
@@ -163,27 +169,27 @@ const updateProduct = (request, response) => {
                                    if(request.body.sku){
                                     products.findOne({where:{sku:request.body.sku}}).then((result) => {
                                         if(result){
-                                            response.send("sku "+ request.body.sku + " already exists");
+                                            response.status(400).send("sku "+ request.body.sku + " already exists");
                                         }
                                       
                                         else{
-                                            products.update(request.body, {where:{sku: request.params.productId}}).then((updatedData) => {
+                                            products.update(request.body, {where:{id: request.params.productId}}).then((updatedData) => {
                                       
                                                 response.status(204).send('Data is Updated');
                                                 
                                              }).catch((error)=> {
-                                                 response.status(400).send("Quantity should be between 0 and 100")
+                                                 response.status(400).send("Error updating Data. Quantity should be in between 0 and 100.")
                                              });
                                         }
                                     })
                                    }
                                    else {
-                                    products.update(request.body, {where:{sku: request.params.productId}}).then((updatedData) => {
+                                    products.update(request.body, {where:{id: request.params.productId}}).then((updatedData) => {
                                       
                                         response.status(204).send('Data is Updated');
                                         
                                      }).catch((error)=> {
-                                         response.status(400).send("Quantity should be between 0 and 100")
+                                         response.status(400).send("Error updating Data. Quantity should be in between 0 and 100")
                                      });
             
                                     }
@@ -202,7 +208,7 @@ const updateProduct = (request, response) => {
                         response.status(403).send('Product not added by ' + user.username);
                     }
                 } else {
-                    response.status(400).send('Product with sku ' + request.params.productId + " does not exist");
+                    response.status(400).send('Product with productId ' + request.params.productId + " does not exist");
                 }
                
             })
@@ -240,7 +246,7 @@ const editProduct = (request,response) => {
 
         if (user) {
 
-            products.findOne({where:{sku:request.params.productId}}).then((record) => {
+            products.findOne({where:{id:request.params.productId}}).then((record) => {
                 if(record){
                 if(record.owner_user_id == user.id){
 
@@ -253,7 +259,7 @@ const editProduct = (request,response) => {
                                if(request.body.sku){
                                 products.findOne({where:{sku:request.body.sku}}).then((result) => {
                                     if(result){
-                                        response.send("sku "+ request.body.sku + " already exists");
+                                        response.status(400).send("sku "+ request.body.sku + " already exists");
                                     }
                                   
                                     else{
@@ -266,28 +272,28 @@ const editProduct = (request,response) => {
                                                 date_last_updated: new Date().toISOString(),
                                           
                                         };
-                                        products.update(patchProduct, {where:{sku: request.params.productId}}).then((updatedData) => {
+                                        products.update(patchProduct, {where:{id: request.params.productId}}).then((updatedData) => {
                                   
                                             response.status(204).send('Data is Updated');
                                             
                                          }).catch((error)=> {
-                                             response.status(400).send("Quantity should be between 0 and 100")
+                                             response.status(400).send("Error updating Data.Quantity should be in between 0 and 100.")
                                          });
                                     }
                                 })
                                }
                                else {
-                                products.update(request.body, {where:{sku: request.params.productId}}).then((updatedData) => {
+                                products.update(request.body, {where:{id: request.params.productId}}).then((updatedData) => {
                                   
                                     response.status(204).send('Data is Updated');
                                     
                                  }).catch((error)=> {
-                                     response.status(400).send("Quantity should be between 0 and 100")
+                                     response.status(400).send("Error updating Data.Quantity should be in between 0 and 100.")
                                  });
         
                                 }
         
-                                 products.update({date_last_updated:new Date().toISOString()},{where:{sku: request.params.productId}}).catch((error)=>
+                                 products.update({date_last_updated:new Date().toISOString()},{where:{id: request.params.productId}}).catch((error)=>
                                  {
                                     response.send('error updating date_last_updated');
                                  });
@@ -301,7 +307,7 @@ const editProduct = (request,response) => {
                     response.status(403).send('Product not added by ' + user.username);
                 }
             }else {
-                response.status(400).send('Product with sku ' + request.params.productId +' does not exist');
+                response.status(400).send('Product with productId ' + request.params.productId +' does not exist');
             }
             })
 
@@ -330,7 +336,7 @@ const intermediateMethodToUpdate = (request, response, username) => {
     })
     if (!flag) {
         userFlag = true;
-        return response.status(403).json("You can add or update name, description,manufacturer,sku and quantity only!");
+        return response.status(401).json("You can add or update name, description,manufacturer,sku and quantity only!");
     }
 
     //const account_updated = new Date().toISOString();
@@ -353,7 +359,7 @@ const deleteProduct = (request, response) => {
 
         if (user) {
 
-            products.findOne({where:{sku:request.params.productId}}).then((record) => {
+            products.findOne({where:{id:request.params.productId}}).then((record) => {
                 if(record){
                 if(record.owner_user_id == user.id){
 
@@ -361,7 +367,7 @@ const deleteProduct = (request, response) => {
 
                     passwordCheckFunction(hashPassword, password).then((valueToCompare) => {
                         if (valueToCompare) {
-                            products.destroy({where:{sku:request.params.productId}}).then((result) => {
+                            products.destroy({where:{id :request.params.productId}}).then((result) => {
                                 response.status(204).send('Data deleted');
                             }).catch((error) => {
                                 response.status(400).send('Data destroy failed');
@@ -375,14 +381,16 @@ const deleteProduct = (request, response) => {
                     response.status(403).send('Product not added by ' + user.username);
                 }
             }else {
-                response.status(404).send('Product with sku ' + request.params.productId +' does not exist');
+                response.status(404).send('Product with productId ' + request.params.productId +' does not exist');
             }
-            })
+            }).catch((error) => {
+                response.status(400).send('"Error Deleting Data');
+            });
 
          
 
         } else {
-            response.status(404).send('User not found');
+            response.status(401).send('User not found');
         }
 
     }).catch((error) => {
