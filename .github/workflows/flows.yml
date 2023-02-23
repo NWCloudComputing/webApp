@@ -28,7 +28,7 @@ jobs:
     - run: |
           zip -r webApp.zip ./
           pwd ./webApp
-          cd Packer
+          cd packer
           packer init .
           packer fmt .
           packer validate .
