@@ -46,7 +46,7 @@ const createProduct = (request, response) => {
                 if (valueToCompare) {
 
                     
-                    console.log(!quantity);
+                    //console.log(!quantity);
                     if ((!name || !description || !sku || !manufacturer || !quantity) && quantity!= 0) {
                         return response.status(400).json("Incomplete Data");
                     }
@@ -169,7 +169,18 @@ const updateProduct = (request, response) => {
                                    if(request.body.sku){
                                     products.findOne({where:{sku:request.body.sku}}).then((result) => {
                                         if(result){
+                                            if(record.sku != request.body.sku){
                                             response.status(400).send("sku "+ request.body.sku + " already exists");
+                                            }
+                                            else {
+                                                products.update(request.body, {where:{id: request.params.productId}}).then((updatedData) => {
+                                      
+                                                    response.status(204).send('Data is Updated');
+                                                    
+                                                 }).catch((error)=> {
+                                                     response.status(400).send("Error updating Data. Quantity should be in between 0 and 100.")
+                                                 });
+                                            }
                                         }
                                       
                                         else{
@@ -254,13 +265,21 @@ const editProduct = (request,response) => {
 
                     passwordCheckFunction(hashPassword, password).then((valueToCompare) => {
                         if (valueToCompare) {
+
+                            if(request.body.sku === "") {
+                                console.log("sku is " + request.body.sku);
+                               return response.status(400).send("Sku cannot be empty");
+                               
+                            }
         
                                // console.log("sku is " + request.body.sku);
-                               if(request.body.sku){
+                               else if(request.body.sku){
                                 products.findOne({where:{sku:request.body.sku}}).then((result) => {
                                     if(result){
                                         response.status(400).send("sku "+ request.body.sku + " already exists");
                                     }
+
+                                   
                                   
                                     else{
                                         const patchProduct = {                                           

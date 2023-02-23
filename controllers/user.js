@@ -140,9 +140,13 @@ const editUser = (request, response) => {
         return response.status(401).json("Please provide Username and Password");
     }
 
-    intermediateMethodToUpdate(request, response, username);
+    let returnValue = null;
+    returnValue = intermediateMethodToUpdate(request, response, username);
+    if(returnValue !== true) {
+        return;
+    }
 
-    if(!userFlag){
+    
     users.findByPk(request.params.userId).then((result) => {
 
         const hashPassword = result.password;
@@ -193,7 +197,7 @@ const editUser = (request, response) => {
             
         }); 
 
-    }
+    
 
 
    
@@ -231,6 +235,8 @@ const intermediateMethodToUpdate = (request, response, username) => {
     } else {
         
     }
+
+    return true;
 }
 
 const getHealth = (request, response) => {
