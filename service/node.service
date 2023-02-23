@@ -1,0 +1,16 @@
+[Unit]
+Description=webapp App
+After=node.service
+
+[Service]
+Environment=DB_PORT=5432
+
+User=ec2-user
+ExecStart=/usr/bin/node /home/ec2-user/index.js
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target

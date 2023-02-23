@@ -25,5 +25,35 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: CI=true npm test
+    - run: |
+          zip -r webApp.zip ./
+          pwd ./webApp
+          cd Packer
+          packer init .
+          packer fmt .
+          packer validate .
     env:
       CI: true
+
+  # packer_init_validate:
+  #   runs-on: ubuntu-latest
+  #   name: Validate Packer for the AMI Build
+  #   steps: 
+  #     - name: Step 1 - Checkout code from branch
+  #       uses: actions/checkout@v2
+
+  #     - name: Step 2 - zip all the webService files
+  #       run: |
+  #         zip -r webapp.zip ./
+  #         pwd ./webapp
+  #     - name: Step 3 - Packer Init
+  #       uses: hashicorp/packer-github-actions@master
+  #       with:
+  #         command: init
+  #         target: ami.pkr.hcl
+
+  #     - name: Step 4 - Validate Packer Template
+  #       uses: hashicorp/packer-github-actions@master
+  #       with:
+  #         command: validate
+  #         target: ami.pkr.hcl
