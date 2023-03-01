@@ -1,6 +1,6 @@
 ***************************Assignment 1:***************************
 
-I developed a web application using nodejs and the database used is postgresSQL.
+I developed a web application using nodejs and the database used is postgresSQL
 
 I used POSTMAN to do the API calls.
 
