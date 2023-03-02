@@ -87,3 +87,5 @@ The RESTful API Endpoints implemented for products are
 3. PUT/PATCH - to update the values like name, description, sku, quantity and manufacturer PUT/PATCH is used. sku should be a unique value. Basic authorization should happen successfully when a user wants to update the values. API address will be http://{public_IP_of_EC2}:3000/v1/product/{sku}. The values that need to be updated should be given in the json format. The response for this call is the 'Data is Updated' message. Only user who creates the product can update the details
 
 4. DELETE - to delete the row in the table products basic authentication have to be successful and only user who creates the product can delete it. API address will be http://{public_IP_of_EC2}:3000/v1/product/{sku}
+
+*************************Assignment 5*************************
