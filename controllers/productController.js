@@ -1,6 +1,7 @@
 const sequelize = require('../db');
 const logger = require('../logging');
 const res = require('../utils/responseLib');
+const uuid = require('uuid');
 //const statsD = require('node-statsd');
 const {
     emailValidation,
@@ -12,11 +13,77 @@ const {
 
 const products = require('../models/productModel');
 const users = require('../models/userModel');
+const images = require('../models/imageModel');
 const { response } = require('../app');
+const uniqueId = uuid.v4();
+const fileUpload = require('express-fileupload');
+const express = require('express');
+const app = express();
+const fs = require('fs');
+ const AWS = require('aws-sdk');
+const multer = require('multer');
+const json = express.json();
+app.use(json);
+app.use(fileUpload({
+    limits:{fileSize:50 * 1024 *1024},
+}))
 
 let userFlag = false;
 
 //POST Method
+
+const createProductImage = async (request, response) => {
+
+    console.log(request.file);
+    // const img = req.files;
+   
+   // const img = fs.readFileSync('./controllers/download.jpg');
+   
+       const UploadParams = {
+           Bucket: process.env.AWS_S3_BUCKET_NAME,
+           Key: `image-${uniqueId}`,
+           //Key: fs.createReadStream(request.file.name),
+          // Body:req.swagger.params.value.buffer,
+           Body: Buffer.from(request.body.name),
+         // Body:img,
+        
+          // ContentType: request.file.mimetype,
+           ACL: 'public-read'
+       }
+   
+      // let s3response = s3.upload(UploadParams).promise();
+   
+       //return s3response.Location;
+   
+      s3.upload(UploadParams, function(err,data)  {
+       if(err){
+           console.log(err);
+       }
+       response.status(200).send('Image Upload Successful')
+       console.log("Image upload successful.");
+       console.log(data);
+   
+       const newImage = {
+           product_id: request.params.productId,
+           file_name:`image--${uniqueId}`,        
+           date_created: new Date().toISOString(),
+           s3_bucket_path: data.Location
+   
+         };
+   
+         images.create(newImage).then(result => {
+           response.status(201).send(result);
+         })
+         .catch(error => {
+           console.log(error);
+           response.status(400).send('Error sending image');
+         });
+   
+   
+   
+      });
+   
+   }
 
 const createProduct = (request, response) => {
 
@@ -114,6 +181,8 @@ const createProduct = (request, response) => {
 //Get Method
 
 const getProduct = (request, response) => {
+
+    //console.log('Hello-pr');
 
     products.findByPk(request.params.productId).then((result) => {
         if(result){
@@ -429,6 +498,7 @@ module.exports = {
     updateProduct,
     editProduct,
     getHealth,
-    deleteProduct
+    deleteProduct,
+    createProductImage
 
 }
