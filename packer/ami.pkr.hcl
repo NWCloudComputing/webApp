@@ -1,17 +1,17 @@
 
 variable "aws_access_key" {
   type    = string
- // default = env.AWS_ACCESS_KEY_ID
+  default = ""
 }
 
 variable "aws_region" {
   type    = string
- // default = env(AWS_REGION)
+  default = ""
 }
 
 variable "aws_secret_key" {
   type    = string
-  //default = env(AWS_SECRET_ACCESS_KEY)
+  default = ""
 }
 
 variable "source_ami" {
