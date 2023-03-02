@@ -1,5 +1,6 @@
-const userRouter = require("./user");
-const productRouter = require('./product');
+const userRouter = require("./userRouter");
+const productRouter = require('./productRouter');
+const imageRouter = require('./imageRouter');
 
 
 /**
@@ -10,6 +11,7 @@ const productRouter = require('./product');
 const routes = (app) => {
     app.use("/v1/user", userRouter);
     app.use("/v1/product", productRouter);
+   // app.use("/v1/product/:productId/image", imageRouter);
     app.use("/healthz",userRouter);
     app.use("/healthz",productRouter);
 

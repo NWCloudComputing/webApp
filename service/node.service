@@ -1,16 +1,26 @@
 [Unit]
-Description=webapp App
-After=node.service
+Description=webapp nodejs Application
+After=cloud-final.service
 
 [Service]
-Environment=DB_PORT=5432
+Type=simple
 
-User=ec2-user
-ExecStart=/usr/bin/node /home/ec2-user/index.js
+
+Environment=PORT=3000
+
+
 Restart=always
 RestartSec=10
 StandardOutput=syslog
 StandardError=syslog
+SyslogIdentifier=webapp
+User=ec2-user
+ExecStart= /usr/bin/node /home/ec2-user/index.js
+
+
+
+
 
 [Install]
 WantedBy=multi-user.target
+
