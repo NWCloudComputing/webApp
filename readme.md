@@ -89,3 +89,17 @@ The RESTful API Endpoints implemented for products are
 4. DELETE - to delete the row in the table products basic authentication have to be successful and only user who creates the product can delete it. API address will be http://{public_IP_of_EC2}:3000/v1/product/{sku}
 
 *************************Assignment 5*************************
+
+In this assignment we are adding 4 new routes in our web application
+
+POST : v1/product/productID/image -> to post a new image
+
+GET : v1/product/productID/image -> to get all images
+
+GET : v1/product/productID/image/imageId -> to get specific image
+
+DELETE : v1/product/productID/image/imageId -> to delete a specific image
+
+When we post and delete images , they should get uploaded and deleted in the S3 bucket in Aws ec2 instance
+
+This assignment should ensure that our app runs in the ec2 instance and get connected to the rds instance.
