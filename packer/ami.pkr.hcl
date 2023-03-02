@@ -16,7 +16,7 @@ variable "aws_secret_key" {
 
 variable "source_ami" {
   type = string
-  default = "ami-0dfcb1ef8550277af"
+  default = ""
 }
 
 variable "ssh_username" {
