@@ -89,7 +89,7 @@ build {
   }
 
   provisioner "shell" {
-    inline = ["sudo chmod +x /tmp/node.sh", "sudo /tmp/node.sh", "sudo chmod +x /tmp/postgresql.sh", "sudo /tmp/postgresql.sh"]
+    inline = ["sudo chmod +x /tmp/node.sh", "sudo /tmp/node.sh"]
   }
 
   provisioner "shell" {
