@@ -68,29 +68,44 @@ source "amazon-ebs" "Custom_AMI" {
 build {
   sources = ["source.amazon-ebs.Custom_AMI"]
 
-  provisioner "file" {
+
+
+
+    provisioner "shell" {
+    inline = ["cd /home/ec2-user", "mkdir script"]
+  }
+
+    provisioner "file" {    
+    destination = "/home/ec2-user/script/"
+    source      = "../webapp.zip"
+  }
+
+    provisioner "file" {
     destination = "/tmp/node.sh"
     source      = "tmp/node.sh"
   }
 
-  // provisioner "file" {
-  //   destination = "/tmp/postgresql.sh"
-  //   source      = "tmp/postgresql.sh"
-  // }
+   provisioner "shell" {
+    inline = ["sudo chmod +x /tmp/node.sh", "sudo /tmp/node.sh"]
+  }
 
   provisioner "file" {
     destination = "/tmp/node.service"
     source      = "../service/node.service"
   }
 
-  provisioner "file" {
-    destination = "/home/ec2-user/webapp.zip"
-    source      = "../webapp.zip"
+ 
+   
+   provisioner "shell" {
+    inline = ["sudo mv /tmp/node.service /etc/systemd/system/node.service"]
   }
 
-  provisioner "shell" {
-    inline = ["sudo chmod +x /tmp/node.sh", "sudo /tmp/node.sh"]
+
+   provisioner "shell" {
+    inline = [ "sudo chown root:root /etc/systemd/system/node.service", "sudo chmod 644 /etc/systemd/system/node.service", "sudo systemctl daemon-reload", "sudo systemctl enable node.service", "sudo systemctl start node.service"]
   }
+
+ 
 
   provisioner "shell" {
     inline = ["rpm -Va --nofiles --nodigest"]
