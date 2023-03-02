@@ -1,6 +1,6 @@
 [Unit]
 Description=webapp nodejs Application
-After=cloud-final.service
+After=cloud-final.target
 
 [Service]
 Type=simple
