@@ -103,3 +103,5 @@ DELETE : v1/product/productID/image/imageId -> to delete a specific image
 When we post and delete images , they should get uploaded and deleted in the S3 bucket in Aws ec2 instance
 
 This assignment should ensure that our app runs in the ec2 instance and get connected to the rds instance.
+
+for demo
