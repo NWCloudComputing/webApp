@@ -407,17 +407,44 @@ const deleteProduct = (request, response) => {
                     passwordCheckFunction(hashPassword, password).then((valueToCompare) => {
                         if (valueToCompare) {
 
-                            var deleteParam = {
+                            // var deleteParam = {
+                            //     Bucket: process.env.S3_BUCKET_NAME,
+                            //     Key: `/${request.params.productId}`
+
+                            // };
+
+                            // s3.deleteObject(deleteParam, function (err, data) {
+
+                            //     data && console.log("delete success", data.Location)
+
+                            // });
+                            const params = {
                                 Bucket: process.env.S3_BUCKET_NAME,
-                                Key: `/${request.params.productId}`
+                                Prefix: `${request.params.productId}/`
+                              };
 
-                            };
-
-                            s3.deleteObject(deleteParam, function (err, data) {
-
-                                data && console.log("delete success", data.Location)
-
-                            });
+                            s3.listObjectsV2(params, function(err, data) {
+                                if (err) {
+                                  console.log(err);
+                                } else {
+                                  const deleteParams = {
+                                    Bucket: bucketName,
+                                    Delete: { Objects: [] }
+                                  };
+                              
+                                  data.Contents.forEach(content => {
+                                    deleteParams.Delete.Objects.push({ Key: content.Key });
+                                  });
+                              
+                                  s3.deleteObjects(deleteParams, function(err, data) {
+                                    if (err) {
+                                      console.log(err);
+                                    } else {
+                                      console.log(`Successfully deleted folder`);
+                                    }
+                                  });
+                                }
+                              });
 
                             products.destroy({where:{id :request.params.productId}}).then((result) => {
                                 response.status(204).send('Products deleted');
