@@ -28,62 +28,12 @@ app.use(fileUpload({
     limits:{fileSize:50 * 1024 *1024},
 }))
 
+
+
 let userFlag = false;
 
 //POST Method
 
-const createProductImage = async (request, response) => {
-
-    console.log(request.file);
-    // const img = req.files;
-   
-   // const img = fs.readFileSync('./controllers/download.jpg');
-   
-       const UploadParams = {
-           Bucket: process.env.AWS_S3_BUCKET_NAME,
-           Key: `image-${uniqueId}`,
-           //Key: fs.createReadStream(request.file.name),
-          // Body:req.swagger.params.value.buffer,
-           Body: Buffer.from(request.body.name),
-         // Body:img,
-        
-          // ContentType: request.file.mimetype,
-           ACL: 'public-read'
-       }
-   
-      // let s3response = s3.upload(UploadParams).promise();
-   
-       //return s3response.Location;
-   
-      s3.upload(UploadParams, function(err,data)  {
-       if(err){
-           console.log(err);
-       }
-       response.status(200).send('Image Upload Successful')
-       console.log("Image upload successful.");
-       console.log(data);
-   
-       const newImage = {
-           product_id: request.params.productId,
-           file_name:`image--${uniqueId}`,        
-           date_created: new Date().toISOString(),
-           s3_bucket_path: data.Location
-   
-         };
-   
-         images.create(newImage).then(result => {
-           response.status(201).send(result);
-         })
-         .catch(error => {
-           console.log(error);
-           response.status(400).send('Error sending image');
-         });
-   
-   
-   
-      });
-   
-   }
 
 const createProduct = (request, response) => {
 
@@ -94,6 +44,7 @@ const createProduct = (request, response) => {
     if (!username || !password) {
         return response.status(401).json("Please provide Username and Password");
     }
+
 
    
 
@@ -455,10 +406,26 @@ const deleteProduct = (request, response) => {
 
                     passwordCheckFunction(hashPassword, password).then((valueToCompare) => {
                         if (valueToCompare) {
+
+                            var deleteParam = {
+                                Bucket: process.env.S3_BUCKET_NAME,
+                                Key: `/${request.params.productId}`
+
+                            };
+
+                            s3.deleteObject(deleteParam, function (err, data) {
+
+                                data && console.log("delete success", data.Location)
+
+                            });
+
                             products.destroy({where:{id :request.params.productId}}).then((result) => {
-                                response.status(204).send('Data deleted');
+                                response.status(204).send('Products deleted');
                             }).catch((error) => {
                                 response.status(400).send('Data destroy failed');
+                            })
+                            images.destroy({where:{product_id:request.params.productId}}).then((result) => {
+                                response.status(204).send("Images Deleted")
                             })
                         }else {
                             response.status(401).send('Invalid Password');
@@ -499,6 +466,6 @@ module.exports = {
     editProduct,
     getHealth,
     deleteProduct,
-    createProductImage
+    
 
 }
