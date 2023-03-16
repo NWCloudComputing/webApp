@@ -428,7 +428,7 @@ const deleteProduct = (request, response) => {
                                   console.log(err);
                                 } else {
                                   const deleteParams = {
-                                    Bucket: bucketName,
+                                    Bucket: process.env.S3_BUCKET_NAME,
                                     Delete: { Objects: [] }
                                   };
                               
