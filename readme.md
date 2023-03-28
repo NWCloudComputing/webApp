@@ -120,3 +120,5 @@ Configuring Amazon Route 53:
 6. After creating the dev hosted zone, you will see four Route 53 name servers listed for the hosted zone. Copy these name servers to use in the next step.
 7. Go back to the hosted zone for your main domain name and click on "Create Record Set." Enter "dev" in the "Name" field, select "A - IPv4 address" in the "Type" field, and enter the IP address of your dev server in the "Value" field. Leave the other fields as default and click on "Create."
 8. Create a subdomain and hosted zone for the demo AWS account by repeating steps 5-7, replacing "dev" with "prod."
+
+*****************for review*****************
