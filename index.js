@@ -8,6 +8,7 @@ const imageModel = require('./models/imageModel');
 const sequelize = require('./db');
 const fileUpload = require('express-fileupload');
 const AWS = require('aws-sdk');
+const logger = require('./logging');
 //AWS.config.update({region:'us-east-1'})
 //var app = express();
 //app.use(json)
@@ -34,24 +35,33 @@ s3 = new AWS.S3({});
 
 userModel.sync().then((result) => {
    console.log('Users Table created');
+   logger.info('Users table created');
    productModel.sync().then((result) => {
      productModel.belongsTo(userModel, {foreignKey: 'owner_user_id'});
      console.log('Products Table created');
+     logger.info('Products table created');
      imageModel.sync().then((result) => {
-      console.log('Image table created')
+      console.log('Image table created');
+      logger.info('Image table created');
      }).catch((error) => {
       console.log('Error in creating Image table');
+      logger.error('Error in creating Image table');
      })
   }).catch((error) => {
      console.log('Error in creating product table');
+     logger.error('Error in creating product table');
   });
 }).catch((error) => {
-   console.log('Error in creating user table');
- });
+   console.log('Error in creating user table');
+   logger.error('Error in creating user table');
+   console.log(error);
+});
 
 productModel.belongsTo(userModel, {foreignKey: 'owner_user_id'});
 
 
 
-app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on ${PORT}`),
+logger.info('Server started successfully')
+);
 
