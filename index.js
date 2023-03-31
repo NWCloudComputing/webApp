@@ -52,8 +52,8 @@ userModel.sync().then((result) => {
      logger.error('Error in creating product table');
   });
 }).catch((error) => {
-   console.log('Error in creating user table');
-   logger.error('Error in creating user table');
+   // console.log('Error in creating user table');
+   // logger.error('Error in creating user table');
    console.log(error);
 });
 
