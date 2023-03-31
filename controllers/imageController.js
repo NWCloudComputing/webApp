@@ -93,6 +93,7 @@ const createProductImage = (request, response) => {
                                     // };
 
                                     if (request.file.mimetype != 'image/jpeg' && request.file.mimetype != 'image/png' && request.file.mimetype != 'image/jpg') {
+                                        logger.warn("Upload format incorrect");
                                         return response.status(400).send({
                                             message: 'Uploaded format incorrect'
                                         });
@@ -131,6 +132,7 @@ const createProductImage = (request, response) => {
                                     })
 
                                 } else {
+                                    logger.warn("No file uploaded");
                                     response.status(400).send("No file Uploaded");
                                 }
 
@@ -150,6 +152,7 @@ const createProductImage = (request, response) => {
 
 
         } else {
+            logger.error("No user found");
             response.status(401).send('No user found');
         }
 
@@ -322,6 +325,7 @@ const deleteProductImage = async (request, response) => {
                                 // console.log("hello");
                                 //  console.log(!imageId);
                                 if (!imageId) {
+                                    logger.error("image not found");
                                     return response.status(404).json({
                                         message: 'Image not found'
                                     });
@@ -381,6 +385,7 @@ const deleteProductImage = async (request, response) => {
                         });
 
                     } else {
+                        logger.error("product not added by this user");
                         response.status(403).send('Product not added by ' + user.username);
                     }
                 } else {
