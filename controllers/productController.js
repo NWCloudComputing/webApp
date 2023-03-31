@@ -45,6 +45,7 @@ const createProduct = (request, response) => {
 
 
     if (!username || !password) {
+        logger.error("Username or password not provided");
         return response.status(401).json("Please provide Username and Password");
     }
 
@@ -69,6 +70,7 @@ const createProduct = (request, response) => {
 
                     //console.log(!quantity);
                     if ((!name || !description || !sku || !manufacturer || !quantity) && quantity != 0) {
+                        logger.error("Incomplete Data");
                         return response.status(400).json("Incomplete Data");
                     }
 
@@ -86,6 +88,7 @@ const createProduct = (request, response) => {
 
                     products.findOne({ where: { sku: sku } }).then((product) => {
                         if (product) {
+                            logger.error("Product with same sku Already Exists");
                             return response.status(400).send(res.generate(true, 'Product with same sku Already Exists', 400, {}));
                         }
                         else {
@@ -115,12 +118,14 @@ const createProduct = (request, response) => {
                     });
 
                 } else {
+                    logger.error("Invalid Password");
                     response.status(401).send('Invalid Password');
                 }
             })
 
 
         } else {
+            logger.error("User not found");
             response.status(401).send('User not found');
         }
 
@@ -404,6 +409,7 @@ const deleteProduct = (request, response) => {
     const [username, password] = basicAuthenticationHandler(request);
 
     if (!username || !password) {
+        logger.error("Please provide Username and Password");
         return response.status(401).json("Please provide Username and Password");
     }
 
@@ -460,6 +466,7 @@ const deleteProduct = (request, response) => {
                                     response.status(400).send('Data destroy failed');
                                 })
                                 images.destroy({ where: { product_id: request.params.productId } }).then((result) => {
+                                    logger.info("Images Deleted");
                                     response.status(204).send("Images Deleted")
                                 })
                             } else {
