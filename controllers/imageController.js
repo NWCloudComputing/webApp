@@ -2,7 +2,7 @@ const sequelize = require('../db');
 const logger = require('../logging');
 const uuid = require('uuid');
 const res = require('../utils/responseLib');
-//const statsD = require('node-statsd');
+const statsD = require('node-statsd');
 const {
     emailValidation,
     hashingOfPassword,
@@ -31,6 +31,7 @@ app.use(fileUpload({
     limits: { fileSize: 50 * 1024 * 1024 },
 }))
 
+const metricCounter = new statsD('localhost', 8125);
 
 
 // const SESConfig = {
@@ -47,6 +48,7 @@ app.use(fileUpload({
 //AWS.config.update(SESConfig);
 
 const createProductImage = (request, response) => {
+    metricCounter.increment("createProductImage");
 
     const uniqueId = uuid.v4();
 
@@ -118,6 +120,7 @@ const createProductImage = (request, response) => {
 
                                         };
                                         images.create(newImage).then(result => {
+                                            logger.info("Image uploaded");
                                             response.status(201).send(result);
                                         })
                                             .catch(error => {
@@ -162,6 +165,8 @@ const createProductImage = (request, response) => {
 
 const getAllProductImages = (request, response) => {
 
+    metricCounter.increment("getAllProductImages");
+
     const [username, password] = basicAuthenticationHandler(request);
 
     if (!username || !password) {
@@ -183,6 +188,7 @@ const getAllProductImages = (request, response) => {
 
                                 images.findAll({ where: { product_id: request.params.productId } }).then(result => {
                                     // console.log(result);
+                                    logger.info("Fetched all images");
                                     response.status(200).send(result);
 
                                 }).catch(error => {
@@ -218,6 +224,7 @@ const getAllProductImages = (request, response) => {
 
 const getProductImage = (request, response) => {
 
+    metricCounter.increment("getProductImage");
     const [username, password] = basicAuthenticationHandler(request);
 
     if (!username || !password) {
@@ -245,6 +252,7 @@ const getProductImage = (request, response) => {
                                     if (result) {
                                         // console.log(result);
                                         if (result.product_id == request.params.productId) {
+                                            logger.info("Image with id " + request.params.imageId + ' fetched');
                                             response.status(200).send(result);
                                         } else {
                                             response.status(404).send("Image not found");
@@ -285,6 +293,8 @@ const getProductImage = (request, response) => {
 }
 
 const deleteProductImage = async (request, response) => {
+
+    metricCounter.increment("deleteProductImage");
 
     const [username, password] = basicAuthenticationHandler(request);
 
@@ -346,6 +356,7 @@ const deleteProductImage = async (request, response) => {
                                                         image_id: image_id
                                                     }
                                                 }).then(result => {
+                                                    logger.info("Image Deleted");
                                                     response.status(204).send(result);
 
                                                 })

@@ -19,7 +19,7 @@ const { Sequelize, Model, DataTypes } = require('sequelize');
 const { CommandCompleteMessage } = require('pg-protocol/dist/messages');
 
 
-const metricCounter = new statsD();
+const metricCounter = new statsD('localhost', 8125);
 
 
 
@@ -28,6 +28,9 @@ const metricCounter = new statsD();
 const createUser = (request, response) => {
 
     var regexName = /^[a-zA-Z]+ [a-zA-Z]+$/;
+
+   // metricCounter.increment(request.method + '' + request.path);
+   metricCounter.increment("createUser");
 
     if(request.body.username){
     users.findOne({where:{username:request.body.username}}).then((result) => {
@@ -39,6 +42,7 @@ const createUser = (request, response) => {
     
         const result1 = reqBody.filter(el => el === 'account_created' || el === 'account_updated' || el === 'id');
         if (result1.length === 1) {
+            logger.warn("Only first_name, last_name, username, and password is required");
             return response.status(400).json('Only first_name, last_name, username, and password is required');
         }
 
@@ -73,6 +77,7 @@ const createUser = (request, response) => {
                    // console.log(result.dataValues.password);
                     delete result.dataValues.password;
                     response.status(201).send(result);
+                    logger.info("User is created");
                 }).catch((error) => {
                     console.log(error);
                 });
@@ -95,6 +100,9 @@ const createUser = (request, response) => {
 const getUser = (request, response) =>{
     const [username, password] = basicAuthenticationHandler(request);
 
+    //metricCounter.increment(request.method + '' + request.path);
+    metricCounter.increment("getUser");
+
         if (!username || !password) {
             return response.status(401).json("Please provide Username and Password");
         }
@@ -114,6 +122,7 @@ const getUser = (request, response) =>{
                     // delete data["is_verified"];
                     delete data.dataValues.password;
                     console.log("Data fetch successful");
+                    logger.info("User is fetched");
                     return response.status(200).json(data); 
                 }   
                  else {
@@ -135,6 +144,8 @@ const getUser = (request, response) =>{
 
 const editUser = (request, response) => {
     const [username, password] = basicAuthenticationHandler(request);
+
+    metricCounter.increment("editUser");
 
     if (!username || !password) {
         return response.status(401).json("Please provide Username and Password");
@@ -160,7 +171,8 @@ const editUser = (request, response) => {
 
                 users.update(request.body, {where:{id: request.params.userId}}).then((updatedData) => {
                    // response.status(200).send(updatedData);
-                    response.status(204).send('Data is Updated')
+                    response.status(204).send('Data is Updated');
+                    logger.info("User is updated");
                     console.log('updated');
                 }).catch((error)=> {
                     
@@ -240,6 +252,7 @@ const intermediateMethodToUpdate = (request, response, username) => {
 }
 
 const getHealth = (request, response) => {
+    logger.info("Health of the server is OK");
     return response.status(200).json("Health is OK");
 }
 
