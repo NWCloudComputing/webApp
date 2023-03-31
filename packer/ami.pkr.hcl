@@ -26,7 +26,7 @@ variable "ssh_username" {
 
 variable "demo_accountid" {
   type    = string
-  default = "181600461636"
+  default = "608454289209"
 }
 
 data "amazon-ami" "awsdev_ami" {
