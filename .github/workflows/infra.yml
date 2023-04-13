@@ -37,7 +37,7 @@ jobs:
           zip -r webapp.zip ./
           pwd ./webapp
           cd packer
-          packer build -var 'aws_access_key=${{secrets.AWS_ACCESS_KEY_ID_DEV}}' -var 'aws_secret_key=${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}' -var 'aws_region=${{secrets.AWS_REGION}}' ami.pkr.hcl
+          packer build -var 'aws_access_key=${{secrets.AWS_ACCESS_KEY_ID}}' -var 'aws_secret_key=${{secrets.AWS_SECRET_ACCESS_KEY}}' -var 'aws_region=${{secrets.AWS_REGION}}' ami.pkr.hcl
 
       - name: Getting AMI id as outputs
         id: AMI_ID_OUTPUT
@@ -47,7 +47,7 @@ jobs:
           echo $ID_OF_AMI
           echo "ID_OF_AMI=$ID_OF_AMI" >> "$GITHUB_OUTPUT"
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}          
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}          
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
   
